@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daniel Mafuru — Full Stack Web Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'geist': ['Geist', 'sans-serif'],
+                        'space': ['Space Grotesk', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        'trust': {
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #050505;
+            color: #ffffff;
+            font-family: 'Geist', sans-serif;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #404040; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0px); }
+        }
+        .fade-up {
+            opacity: 0;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .delay-600 { animation-delay: 0.6s; }
+        .delay-700 { animation-delay: 0.7s; }
+
+        .text-gradient {
+            background: linear-gradient(to bottom, #ffffff, rgba(255,255,255,0.6));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .text-gradient-brand {
+            background: linear-gradient(to top right, #06b6d4, #67e8f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .grid-bg {
+            background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 4rem 4rem;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+        }
+
+        .card-hover {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-hover:hover {
+            border-color: rgba(6,182,212,0.35);
+            transform: translateY(-4px);
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 34px rgba(6,182,212,0.25);
+        }
+
+        .logo-glow {
+            filter: drop-shadow(0 0 10px rgba(6,182,212,0.5));
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse-soft { animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-anim { animation: float 6s ease-in-out infinite; }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee { animation: marquee 30s linear infinite; }
+
+        .skill-bar {
+            transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #06b6d4;
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .project-img {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s;
+        }
+        .project-card:hover .project-img {
+            transform: scale(1.05);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #161616;
+            border: 1px solid rgba(6,182,212,0.35);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        .timeline-line {
+            background: linear-gradient(to bottom, #06b6d4, rgba(6,182,212,0.1));
+        }
+    </style>
+</head>
+<body class="font-geist">
+
+    <!-- Digital Rain Canvas -->
+    <canvas id="rainCanvas" class="fixed inset-0 w-full h-full pointer-events-none" style="opacity:0.2; z-index:0;"></canvas>
+
+    <!-- Grid Background -->
+    <div class="fixed inset-0 grid-bg pointer-events-none" style="z-index:0;"></div>
+
+    <!-- Glow Decorations -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(6,182,212,0.06), transparent 70%); z-index:0;"></div>
+
+    <!-- Navigation -->
+
+    <nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-5xl h-12 rounded-full bg-[#0a0a0a]/80 backdrop-blur-md border border-white/10 flex items-center justify-between pl-6 pr-2 z-50 shadow-2xl">
+        <a href="#hero" class="flex items-center gap-2.5">
+            <div class="h-7 w-7 rounded-lg flex items-center justify-center logo-glow" style="background: linear-gradient(to top right, #06b6d4, #67e8f9); box-shadow: 0 0 18px rgba(6,182,212,0.55);">
+                <span class="text-black font-space font-bold text-sm">DM</span>
+            </div>
+            <span class="font-space font-semibold text-sm tracking-tight hidden sm:inline">Daniel Mafuru</span>
+        </a>
+        <div class="hidden md:flex items-center gap-6">
+            <a href="#about" class="nav-link text-xs text-neutral-400 hover:text-white tracking-wide uppercase font-medium">About</a>
+            <a href="#skills" class="nav-link text-xs text-neutral-400 hover:text-white tracking-wide uppercase font-medium">Skills</a>
+            <a href="#services" class="nav-link text-xs text-neutral-400 hover:text-white tracking-wide uppercase font-medium">Services</a>
+            <a href="#projects" class="nav-link text-xs text-neutral-400 hover:text-white tracking-wide uppercase font-medium">Projects</a>
+            <a href="#experience" class="nav-link text-xs text-neutral-400 hover:text-white tracking-wide uppercase font-medium">Experience</a>
+            <a href="#contact" class="nav-link text-xs text-neutral-400 hover:text-white tracking-wide uppercase font-medium">Contact</a>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="#contact" class="h-8 px-4 rounded-full bg-trust-500 text-black text-xs font-semibold tracking-tight flex items-center gap-1.5 hover:bg-trust-400 transition-all" style="box-shadow: 0 0 18px rgba(6,182,212,0.55);">
+                Hire Me
+                <iconify-icon icon="lucide:arrow-right" width="13"></iconify-icon>
+            </a>
+            <button id="mobileMenuBtn" class="md:hidden h-8 w-8 rounded-full border border-white/10 flex items-center justify-center hover:border-trust-500/35 transition-colors">
+                <iconify-icon icon="lucide:menu" width="14"></iconify-icon>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 bg-[#050505]/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-6 opacity-0 pointer-events-none transition-opacity duration-300">
+        <a href="#about" class="mobile-link text-2xl font-space font-light text-neutral-400 hover:text-white transition-colors">About</a>
+        <a href="#skills" class="mobile-link text-2xl font-space font-light text-neutral-400 hover:text-white transition-colors">Skills</a>
+        <a href="#services" class="mobile-link text-2xl font-space font-light text-neutral-400 hover:text-white transition-colors">Services</a>
+        <a href="#projects" class="mobile-link text-2xl font-space font-light text-neutral-400 hover:text-white transition-colors">Projects</a>
+        <a href="#experience" class="mobile-link text-2xl font-space font-light text-neutral-400 hover:text-white transition-colors">Experience</a>
+        <a href="#contact" class="mobile-link text-2xl font-space font-light text-neutral-400 hover:text-white transition-colors">Contact</a>
+        <button id="mobileMenuClose" class="absolute top-8 right-8 h-10 w-10 rounded-full border border-white/10 flex items-center justify-center hover:border-trust-500/35 transition-colors">
+            <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative min-h-[80vh] pt-40 pb-20 flex flex-col items-center justify-center px-6" style="z-index:1;">
+        <div class="fade-up delay-100 flex items-center gap-2 mb-8">
+            <span class="w-2 h-2 rounded-full bg-trust-500 pulse-soft" style="box-shadow: 0 0 8px rgba(6,182,212,0.55);"></span>
+            <span class="text-[11px] font-medium tracking-wider uppercase text-trust-400">Available for Freelance Work</span>
+        </div>
+
+        <h1 class="fade-up delay-200 font-space font-bold text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight text-center max-w-5xl">
+            <span class="text-gradient">Full Stack</span><br>
+            <span class="text-gradient-brand">Web Developer</span>
+        </h1>
+
+        <p class="fade-up delay-300 mt-8 text-lg md:text-xl font-light text-neutral-400 leading-relaxed tracking-tight text-center max-w-2xl">
+            I craft high-performance web applications with modern frameworks, clean architecture, and scalable backend systems that drive real business results.
+        </p>
+
+        <div class="fade-up delay-400 flex flex-wrap items-center justify-center gap-4 mt-10">
+            <a href="#projects" class="h-12 px-8 rounded-full bg-trust-500 text-black text-sm font-semibold tracking-tight flex items-center gap-2 hover:bg-trust-400 transition-all" style="box-shadow: 0 0 18px rgba(6,182,212,0.55);">
+                View My Work
+                <iconify-icon icon="lucide:arrow-down" width="15"></iconify-icon>
+            </a>
+            <a href="https://wa.me/0664988931" target="_blank" class="h-12 px-8 rounded-full bg-white/5 border border-white/10 text-sm font-medium tracking-tight flex items-center gap-2 hover:bg-white/10 hover:border-trust-500/35 transition-all">
+                <iconify-icon icon="lucide:message-circle" width="15" class="text-trust-400"></iconify-icon>
+                WhatsApp Me
+            </a>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="fade-up delay-500 flex flex-wrap items-center justify-center gap-8 md:gap-16 mt-16">
+            <div class="text-center">
+                <div class="font-space font-bold text-3xl tracking-tighter text-white">3+</div>
+                <div class="text-[11px] tracking-wider uppercase text-neutral-500 mt-1">Years Experience</div>
+            </div>
+            <div class="w-px h-10 bg-white/10 hidden md:block"></div>
+            <div class="text-center">
+                <div class="font-space font-bold text-3xl tracking-tighter text-white">25+</div>
+                <div class="text-[11px] tracking-wider uppercase text-neutral-500 mt-1">Projects Delivered</div>
+            </div>
+            <div class="w-px h-10 bg-white/10 hidden md:block"></div>
+            <div class="text-center">
+                <div class="font-space font-bold text-3xl tracking-tighter text-white">15+</div>
+                <div class="text-[11px] tracking-wider uppercase text-neutral-500 mt-1">Happy Clients</div>
+            </div>
+            <div class="w-px h-10 bg-white/10 hidden md:block"></div>
+            <div class="text-center">
+                <div class="font-space font-bold text-3xl tracking-tighter text-white">100%</div>
+                <div class="text-[11px] tracking-wider uppercase text-neutral-500 mt-1">Satisfaction Rate</div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="fade-up delay-700 mt-16 flex flex-col items-center gap-2">
+            <span class="text-[10px] tracking-widest uppercase text-neutral-600">Scroll Down</span>
+            <iconify-icon icon="lucide:chevron-down" width="16" class="text-neutral-600 animate-bounce"></iconify-icon>
+        </div>
+    </section>
+
+    <!-- Tech Marquee -->
+    <section class="relative border-y border-white/5 py-5 overflow-hidden" style="z-index:1;">
+        <div class="marquee flex items-center gap-10 whitespace-nowrap">
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:react" width="16"></iconify-icon> React</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:laravel" width="16"></iconify-icon> Laravel</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:bootstrap" width="16"></iconify-icon> Bootstrap</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:mysql" width="20"></iconify-icon> MySQL</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:postgresql" width="16"></iconify-icon> PostgreSQL</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:php" width="20"></iconify-icon> PHP</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:java" width="16"></iconify-icon> Java</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:javascript" width="16"></iconify-icon> JavaScript</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:html-5" width="16"></iconify-icon> HTML5</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:css-3" width="16"></iconify-icon> CSS3</span>
+            <span class="text-neutral-700">•</span>
+            <!-- Duplicate for seamless loop -->
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:react" width="16"></iconify-icon> React</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:laravel" width="16"></iconify-icon> Laravel</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:bootstrap" width="16"></iconify-icon> Bootstrap</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:mysql" width="20"></iconify-icon> MySQL</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:postgresql" width="16"></iconify-icon> PostgreSQL</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:php" width="20"></iconify-icon> PHP</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:java" width="16"></iconify-icon> Java</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:javascript" width="16"></iconify-icon> JavaScript</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:html-5" width="16"></iconify-icon> HTML5</span>
+            <span class="text-neutral-700">•</span>
+            <span class="text-xs tracking-wider uppercase text-neutral-600 flex items-center gap-2"><iconify-icon icon="logos:css-3" width="16"></iconify-icon> CSS3</span>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="relative py-24 px-6" style="z-index:1;">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+                <!-- Image Side -->
+                <div class="relative fade-up">
+                    <div class="relative rounded-3xl overflow-hidden border border-white/10 aspect-[4/5] max-w-md mx-auto lg:mx-0">
+                        <img src="potifolio.png" alt="Daniel Mafuru" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
+                    </div>
+                    <!-- Floating Card -->
+                    <div class="absolute -bottom-6 -right-4 lg:-right-8 bg-[#0a0a0a] border border-white/10 rounded-2xl p-4 float-anim" style="backdrop-filter: blur(12px);">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                                <iconify-icon icon="lucide:code-2" width="18" class="text-trust-400"></iconify-icon>
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold">Full Stack Dev</div>
+                                <div class="text-[11px] text-neutral-500">React + Laravel</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Decorative Glow -->
+                    <div class="absolute -top-10 -left-10 w-40 h-40 rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(6,182,212,0.1), transparent 70%);"></div>
+                </div>
+
+                <!-- Content Side -->
+                <div>
+                    <div class="fade-up flex items-center gap-2 mb-4">
+                        <div class="h-px w-8 bg-trust-500"></div>
+                        <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">About Me</span>
+                    </div>
+                    <h2 class="fade-up delay-100 font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight">
+                        <span class="text-gradient">Passionate about building</span><br>
+                        <span class="text-gradient-brand">digital experiences</span>
+                    </h2>
+                    <p class="fade-up delay-200 mt-6 text-lg font-light text-neutral-400 leading-relaxed tracking-tight">
+                        I'm Daniel Mafuru, a dedicated Full Stack Web Developer with expertise in building modern, scalable web applications. I specialize in crafting seamless user experiences on the frontend with <strong class="text-neutral-300 font-medium">React</strong> and <strong class="text-neutral-300 font-medium">Bootstrap</strong>, while engineering robust, secure backends with <strong class="text-neutral-300 font-medium">Laravel</strong>, <strong class="text-neutral-300 font-medium">PHP</strong>, and <strong class="text-neutral-300 font-medium">Java</strong>.
+                    </p>
+                    <p class="fade-up delay-300 mt-4 text-lg font-light text-neutral-400 leading-relaxed tracking-tight">
+                        My database expertise spans <strong class="text-neutral-300 font-medium">MySQL</strong> and <strong class="text-neutral-300 font-medium">PostgreSQL</strong>, ensuring your data layer is optimized and reliable. I believe in writing clean, maintainable code that scales with your business needs.
+                    </p>
+
+                    <!-- Info Grid -->
+                    <div class="fade-up delay-400 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                            <iconify-icon icon="lucide:user" width="16" class="text-trust-400"></iconify-icon>
+                            <div>
+                                <div class="text-[10px] tracking-wider uppercase text-neutral-600">Name</div>
+                                <div class="text-sm font-medium">Daniel Mafuru</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                            <iconify-icon icon="lucide:map-pin" width="16" class="text-trust-400"></iconify-icon>
+                            <div>
+                                <div class="text-[10px] tracking-wider uppercase text-neutral-600">Location</div>
+                                <div class="text-sm font-medium">Available Worldwide</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                            <iconify-icon icon="lucide:mail" width="16" class="text-trust-400"></iconify-icon>
+                            <div>
+                                <div class="text-[10px] tracking-wider uppercase text-neutral-600">Email</div>
+                                <div class="text-sm font-medium">mafurudaniel99@gmail.com</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                            <iconify-icon icon="lucide:phone" width="16" class="text-trust-400"></iconify-icon>
+                            <div>
+                                <div class="text-[10px] tracking-wider uppercase text-neutral-600">WhatsApp</div>
+                                <div class="text-sm font-medium">+225 697 415 257</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fade-up delay-500 mt-8">
+                        <a href="#contact" class="h-12 px-8 rounded-full bg-white text-black text-sm font-semibold tracking-tight inline-flex items-center gap-2 hover:bg-neutral-200 transition-colors">
+                            Download CV
+                            <iconify-icon icon="lucide:download" width="15"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="relative py-24 px-6" style="z-index:1;">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="fade-up flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-trust-500"></div>
+                    <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">Technical Skills</span>
+                    <div class="h-px w-8 bg-trust-500"></div>
+                </div>
+                <h2 class="fade-up delay-100 font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight text-gradient">
+                    My Technology Stack
+                </h2>
+                <p class="fade-up delay-200 mt-4 text-lg font-light text-neutral-400 tracking-tight max-w-2xl mx-auto">
+                    A comprehensive toolkit honed through years of building production-ready applications.
+                </p>
+            </div>
+
+            <!-- Skill Categories -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Frontend -->
+                <div class="fade-up delay-100 p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:layout" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-1">Frontend Development</h3>
+                    <p class="text-sm text-neutral-500 mb-5">Building responsive, interactive user interfaces</p>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">React.js</span>
+                                <span class="text-xs text-trust-400 font-mono">95%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:95%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">JavaScript</span>
+                                <span class="text-xs text-trust-400 font-mono">92%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:92%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">HTML5 / CSS3</span>
+                                <span class="text-xs text-trust-400 font-mono">97%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:97%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">Bootstrap</span>
+                                <span class="text-xs text-trust-400 font-mono">94%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:94%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backend -->
+                <div class="fade-up delay-200 p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:server" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-1">Backend Development</h3>
+                    <p class="text-sm text-neutral-500 mb-5">Secure APIs and server-side logic</p>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">Laravel (PHP)</span>
+                                <span class="text-xs text-trust-400 font-mono">93%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:93%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">PHP Core</span>
+                                <span class="text-xs text-trust-400 font-mono">90%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:90%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">Java</span>
+                                <span class="text-xs text-trust-400 font-mono">82%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:82%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">REST API Design</span>
+                                <span class="text-xs text-trust-400 font-mono">91%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:91%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database -->
+                <div class="fade-up delay-300 p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:database" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-1">Database & DevOps</h3>
+                    <p class="text-sm text-neutral-500 mb-5">Data modeling, optimization & deployment</p>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">MySQL</span>
+                                <span class="text-xs text-trust-400 font-mono">93%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:93%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">PostgreSQL</span>
+                                <span class="text-xs text-trust-400 font-mono">88%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:88%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">Git / Version Control</span>
+                                <span class="text-xs text-trust-400 font-mono">90%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:90%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <span class="text-sm font-medium">Linux / Server Mgmt</span>
+                                <span class="text-xs text-trust-400 font-mono">80%</span>
+                            </div>
+                            <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="skill-bar h-full rounded-full bg-gradient-to-r from-trust-500 to-trust-400" style="width:80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Skills Tags -->
+            <div class="fade-up delay-400 mt-12 flex flex-wrap justify-center gap-3">
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">REST APIs</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">Authentication (JWT, OAuth)</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">CRUD Operations</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">MVC Architecture</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">Responsive Design</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">State Management</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">Eloquent ORM</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">Database Migration</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">API Integration</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">Agile / Scrum</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">Problem Solving</span>
+                <span class="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 text-xs font-medium text-neutral-400 hover:border-trust-500/35 hover:text-trust-400 transition-all cursor-default">Clean Code</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="relative py-24 px-6" style="z-index:1;">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="fade-up flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-trust-500"></div>
+                    <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">What I Do</span>
+                    <div class="h-px w-8 bg-trust-500"></div>
+                </div>
+                <h2 class="fade-up delay-100 font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight text-gradient">
+                    Services I Offer
+                </h2>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Service 1 -->
+                <div class="fade-up delay-100 group p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:monitor-smartphone" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-2">Full Stack Web Development</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">End-to-end web application development from database design to frontend implementation using React and Laravel.</p>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="fade-up delay-200 group p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:palette" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-2">Frontend UI/UX Development</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Pixel-perfect, responsive interfaces built with React, Bootstrap, and custom CSS that deliver exceptional user experiences.</p>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="fade-up delay-300 group p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:cpu" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-2">Backend API Development</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Secure, scalable REST APIs with Laravel and PHP, including authentication, authorization, and third-party integrations.</p>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="fade-up delay-400 group p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:database" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-2">Database Design & Optimization</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Efficient database architecture with MySQL and PostgreSQL, including query optimization, indexing, and data migration strategies.</p>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="fade-up delay-500 group p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:shopping-cart" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-2">E-Commerce Solutions</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Custom e-commerce platforms with payment integration, inventory management, and order processing systems.</p>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="fade-up delay-600 group p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <iconify-icon icon="lucide:wrench" width="22" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <h3 class="font-space font-semibold text-lg mb-2">Maintenance & Support</h3>
+                    <p class="text-sm text-neutral-500 leading-relaxed">Ongoing maintenance, bug fixes, performance optimization, and feature enhancements for existing web applications.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="relative py-24 px-6" style="z-index:1;">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="fade-up flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-trust-500"></div>
+                    <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">Portfolio</span>
+                    <div class="h-px w-8 bg-trust-500"></div>
+                </div>
+                <h2 class="fade-up delay-100 font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight text-gradient">
+                    Featured Projects
+                </h2>
+                <p class="fade-up delay-200 mt-4 text-lg font-light text-neutral-400 tracking-tight max-w-2xl mx-auto">
+                    A selection of projects showcasing my expertise across the full development stack.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Project 1 -->
+                <div class="fade-up delay-100 project-card group rounded-2xl bg-[#0a0a0a] border border-white/10 overflow-hidden card-hover glow-hover">
+                    <div class="aspect-[16/10] overflow-hidden">
+                        <img src="https://picsum.photos/seed/ecommerce-dashboard/800/500.jpg" alt="E-Commerce Platform" class="project-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">React</span>
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">Laravel</span>
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">MySQL</span>
+                        </div>
+                        <h3 class="font-space font-semibold text-xl mb-2">E-Commerce Platform</h3>
+                        <p class="text-sm text-neutral-500 leading-relaxed mb-4">A full-featured online store with product catalog, cart system, payment integration, user authentication, and admin dashboard for inventory management.</p>
+                        <div class="flex items-center gap-4">
+                            <a href="#" class="text-xs text-trust-400 font-medium flex items-center gap-1.5 hover:gap-2.5 transition-all">
+                                Live Demo <iconify-icon icon="lucide:external-link" width="12"></iconify-icon>
+                            </a>
+                            <a href="#" class="text-xs text-neutral-500 font-medium flex items-center gap-1.5 hover:text-neutral-300 transition-colors">
+                                Source Code <iconify-icon icon="lucide:github" width="12"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="fade-up delay-200 project-card group rounded-2xl bg-[#0a0a0a] border border-white/10 overflow-hidden card-hover glow-hover">
+                    <div class="aspect-[16/10] overflow-hidden">
+                        <img src="https://picsum.photos/seed/management-system/800/500.jpg" alt="Management System" class="project-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">Laravel</span>
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">Bootstrap</span>
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">PostgreSQL</span>
+                        </div>
+                        <h3 class="font-space font-semibold text-xl mb-2">School Management System</h3>
+                        <p class="text-sm text-neutral-500 leading-relaxed mb-4">Comprehensive system handling student enrollment, grade management, attendance tracking, teacher management, and report generation with role-based access control.</p>
+                        <div class="flex items-center gap-4">
+                            <a href="#" class="text-xs text-trust-400 font-medium flex items-center gap-1.5 hover:gap-2.5 transition-all">
+                                Live Demo <iconify-icon icon="lucide:external-link" width="12"></iconify-icon>
+                            </a>
+                            <a href="#" class="text-xs text-neutral-500 font-medium flex items-center gap-1.5 hover:text-neutral-300 transition-colors">
+                                Source Code <iconify-icon icon="lucide:github" width="12"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="fade-up delay-300 project-card group rounded-2xl bg-[#0a0a0a] border border-white/10 overflow-hidden card-hover glow-hover">
+                    <div class="aspect-[16/10] overflow-hidden">
+                        <img src="https://picsum.photos/seed/api-platform-dev/800/500.jpg" alt="API Platform" class="project-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">Laravel</span>
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">PHP</span>
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">MySQL</span>
+                        </div>
+                        <h3 class="font-space font-semibold text-xl mb-2">RESTful API Platform</h3>
+                        <p class="text-sm text-neutral-500 leading-relaxed mb-4">A robust API backend with JWT authentication, rate limiting, request validation, comprehensive documentation, and multi-tenant architecture support.</p>
+                        <div class="flex items-center gap-4">
+                            <a href="#" class="text-xs text-trust-400 font-medium flex items-center gap-1.5 hover:gap-2.5 transition-all">
+                                API Docs <iconify-icon icon="lucide:external-link" width="12"></iconify-icon>
+                            </a>
+                            <a href="#" class="text-xs text-neutral-500 font-medium flex items-center gap-1.5 hover:text-neutral-300 transition-colors">
+                                Source Code <iconify-icon icon="lucide:github" width="12"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="fade-up delay-400 project-card group rounded-2xl bg-[#0a0a0a] border border-white/10 overflow-hidden card-hover glow-hover">
+                    <div class="aspect-[16/10] overflow-hidden">
+                        <img src="https://picsum.photos/seed/portfolio-landing/800/500.jpg" alt="Portfolio Website" class="project-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">React</span>
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">JavaScript</span>
+                            <span class="px-2.5 py-1 rounded-full bg-trust-500/10 border border-trust-500/25 text-[10px] font-medium text-trust-400 tracking-wide uppercase">CSS3</span>
+                        </div>
+                        <h3 class="font-space font-semibold text-xl mb-2">Interactive Portfolio Website</h3>
+                        <p class="text-sm text-neutral-500 leading-relaxed mb-4">A modern, animated portfolio with smooth scroll effects, dynamic content loading, contact form with backend integration, and responsive design across all devices.</p>
+                        <div class="flex items-center gap-4">
+                            <a href="#" class="text-xs text-trust-400 font-medium flex items-center gap-1.5 hover:gap-2.5 transition-all">
+                                Live Demo <iconify-icon icon="lucide:external-link" width="12"></iconify-icon>
+                            </a>
+                            <a href="#" class="text-xs text-neutral-500 font-medium flex items-center gap-1.5 hover:text-neutral-300 transition-colors">
+                                Source Code <iconify-icon icon="lucide:github" width="12"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="relative py-24 px-6" style="z-index:1;">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="fade-up flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-trust-500"></div>
+                    <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">Journey</span>
+                    <div class="h-px w-8 bg-trust-500"></div>
+                </div>
+                <h2 class="fade-up delay-100 font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight text-gradient">
+                    Work Experience
+                </h2>
+            </div>
+
+            <!-- Timeline -->
+            <div class="relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-6 md:left-1/2 top-0 bottom-0 w-px timeline-line md:-translate-x-px"></div>
+
+                <!-- Item 1 -->
+                <div class="fade-up delay-100 relative flex flex-col md:flex-row gap-8 mb-12">
+                    <div class="md:w-1/2 md:text-right md:pr-12 pl-16 md:pl-0">
+                        <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">2023 — Present</span>
+                        <h3 class="font-space font-semibold text-lg mt-1">Freelance Full Stack Developer</h3>
+                        <p class="text-sm text-neutral-500 mt-1 mb-3">Self-Employed</p>
+                        <p class="text-sm text-neutral-400 leading-relaxed">Delivering end-to-end web solutions for clients worldwide. Building custom web applications, e-commerce platforms, and management systems using React, Laravel, and modern database technologies.</p>
+                    </div>
+                    <!-- Dot -->
+                    <div class="absolute left-6 md:left-1/2 top-1 w-3 h-3 rounded-full bg-trust-500 -translate-x-1.5 border-4 border-[#050505]" style="box-shadow: 0 0 12px rgba(6,182,212,0.55);"></div>
+                    <div class="md:w-1/2 md:pl-12"></div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="fade-up delay-200 relative flex flex-col md:flex-row gap-8 mb-12">
+                    <div class="md:w-1/2 md:pr-12"></div>
+                    <!-- Dot -->
+                    <div class="absolute left-6 md:left-1/2 top-1 w-3 h-3 rounded-full bg-trust-500 -translate-x-1.5 border-4 border-[#050505]" style="box-shadow: 0 0 12px rgba(6,182,212,0.55);"></div>
+                    <div class="md:w-1/2 md:pl-12 pl-16">
+                        <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">2022 — 2023</span>
+                        <h3 class="font-space font-semibold text-lg mt-1">Full Stack Developer</h3>
+                        <p class="text-sm text-neutral-500 mt-1 mb-3">Tech Company</p>
+                        <p class="text-sm text-neutral-400 leading-relaxed">Developed and maintained multiple web applications. Led frontend development with React and Bootstrap, built RESTful APIs with Laravel, and managed MySQL/PostgreSQL databases for high-traffic applications.</p>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="fade-up delay-300 relative flex flex-col md:flex-row gap-8 mb-12">
+                    <div class="md:w-1/2 md:text-right md:pr-12 pl-16 md:pl-0">
+                        <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">2021 — 2022</span>
+                        <h3 class="font-space font-semibold text-lg mt-1">Junior Web Developer</h3>
+                        <p class="text-sm text-neutral-500 mt-1 mb-3">Software Development Firm</p>
+                        <p class="text-sm text-neutral-400 leading-relaxed">Started my professional journey building responsive websites with HTML, CSS, JavaScript, and Bootstrap. Gained hands-on experience with PHP, MySQL, and contributed to Laravel-based projects.</p>
+                    </div>
+                    <!-- Dot -->
+                    <div class="absolute left-6 md:left-1/2 top-1 w-3 h-3 rounded-full bg-trust-500/60 -translate-x-1.5 border-4 border-[#050505]"></div>
+                    <div class="md:w-1/2 md:pl-12"></div>
+                </div>
+
+                <!-- Item 4 - Education -->
+                <div class="fade-up delay-400 relative flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/2 md:pr-12"></div>
+                    <!-- Dot -->
+                    <div class="absolute left-6 md:left-1/2 top-1 w-3 h-3 rounded-full bg-trust-500/40 -translate-x-1.5 border-4 border-[#050505]"></div>
+                    <div class="md:w-1/2 md:pl-12 pl-16">
+                        <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">Education</span>
+                        <h3 class="font-space font-semibold text-lg mt-1">Computer Science / Software Engineering</h3>
+                        <p class="text-sm text-neutral-500 mt-1 mb-3">University Studies</p>
+                        <p class="text-sm text-neutral-400 leading-relaxed">Studied core computer science principles including data structures, algorithms, object-oriented programming, database systems, and software engineering methodologies.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="relative py-24 px-6 border-t border-white/5" style="z-index:1;">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="fade-up flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-trust-500"></div>
+                    <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">How I Work</span>
+                    <div class="h-px w-8 bg-trust-500"></div>
+                </div>
+                <h2 class="fade-up delay-100 font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight text-gradient">
+                    My Development Process
+                </h2>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="fade-up delay-100 text-center p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <span class="font-space font-bold text-xl text-trust-400">01</span>
+                    </div>
+                    <h4 class="font-space font-semibold text-base mb-2">Discovery</h4>
+                    <p class="text-xs text-neutral-500 leading-relaxed">Understanding your requirements, goals, and target audience to define the project scope.</p>
+                </div>
+
+                <div class="fade-up delay-200 text-center p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <span class="font-space font-bold text-xl text-trust-400">02</span>
+                    </div>
+                    <h4 class="font-space font-semibold text-base mb-2">Design & Architecture</h4>
+                    <p class="text-xs text-neutral-500 leading-relaxed">Planning the database schema, API structure, and UI/UX wireframes for optimal performance.</p>
+                </div>
+
+                <div class="fade-up delay-300 text-center p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <span class="font-space font-bold text-xl text-trust-400">03</span>
+                    </div>
+                    <h4 class="font-space font-semibold text-base mb-2">Development</h4>
+                    <p class="text-xs text-neutral-500 leading-relaxed">Writing clean, modular code with regular commits, following best practices and coding standards.</p>
+                </div>
+
+                <div class="fade-up delay-400 text-center p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                        <span class="font-space font-bold text-xl text-trust-400">04</span>
+                    </div>
+                    <h4 class="font-space font-semibold text-base mb-2">Testing & Launch</h4>
+                    <p class="text-xs text-neutral-500 leading-relaxed">Rigorous testing, bug fixing, deployment, and post-launch support to ensure everything runs smoothly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="relative py-24 px-6" style="z-index:1;">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="fade-up flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-trust-500"></div>
+                    <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">Testimonials</span>
+                    <div class="h-px w-8 bg-trust-500"></div>
+                </div>
+                <h2 class="fade-up delay-100 font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight text-gradient">
+                    What Clients Say
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="fade-up delay-100 p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover">
+                    <div class="flex items-center gap-1 mb-4">
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <p class="text-sm text-neutral-400 leading-relaxed mb-5">"Daniel delivered an exceptional e-commerce platform that exceeded our expectations. His attention to detail, clean code, and communication throughout the project were outstanding. Highly recommended!"</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/client-ahmed/48/48.jpg" alt="Client" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                        <div>
+                            <div class="text-sm font-medium">Ahmed Hassan</div>
+                            <div class="text-[11px] text-neutral-500">CEO, TechRetail Co.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fade-up delay-200 p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover">
+                    <div class="flex items-center gap-1 mb-4">
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                        <iconify-icon icon="lucide:star" width="14" class="text-trust-400"></iconify-icon>
+                    </div>
+                    <p class="text-sm text-neutral-400 leading-relaxed mb-5">"Working with Daniel on our school management system was a great experience. He understood our complex requirements and built a solution that has significantly improved our administrative efficiency."</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/client-sarah/48/48.jpg" alt="Client" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                        <div>
+                            <div class="text-sm font-medium">Sarah Johnson</div>
+                            <div class="text-[11px] text-neutral-500">Director, Greenfield Academy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="relative py-24 px-6" style="z-index:1;">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(6,182,212,0.04), transparent 70%);"></div>
+        <div class="max-w-5xl mx-auto relative">
+            <div class="text-center mb-16">
+                <div class="fade-up flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-trust-500"></div>
+                    <span class="text-[11px] font-semibold tracking-wider uppercase text-trust-400">Get In Touch</span>
+                    <div class="h-px w-8 bg-trust-500"></div>
+                </div>
+                <h2 class="fade-up delay-100 font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight text-gradient">
+                    Let's Work Together
+                </h2>
+                <p class="fade-up delay-200 mt-4 text-lg font-light text-neutral-400 tracking-tight max-w-2xl mx-auto">
+                    Have a project in mind? I'd love to hear about it. Reach out through any channel below or fill out the contact form.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-5 gap-8">
+                <!-- Contact Info -->
+                <div class="lg:col-span-2 space-y-4">
+                    <a href="https://wa.me/+255 664 988 931" target="_blank" class="fade-up delay-100 flex items-center gap-4 p-4 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover group">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                            <iconify-icon icon="lucide:message-circle" width="20" class="text-trust-400"></iconify-icon>
+                        </div>
+                        <div>
+                            <div class="text-[10px] tracking-wider uppercase text-neutral-600">WhatsApp</div>
+                            <div class="text-sm font-medium">+255 66 498 8931</div>
+                        </div>
+                    </a>
+
+                    <a href="mailto:mafurudaniel99@gmail.com" class="fade-up delay-200 flex items-center gap-4 p-4 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover group">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                            <iconify-icon icon="lucide:mail" width="20" class="text-trust-400"></iconify-icon>
+                        </div>
+                        <div>
+                            <div class="text-[10px] tracking-wider uppercase text-neutral-600">Email</div>
+                            <div class="text-sm font-medium">mafurudaniel99@gmail.com</div>
+                        </div>
+                    </a>
+
+                    <a href="tel:0664988931" class="fade-up delay-300 flex items-center gap-4 p-4 rounded-2xl bg-[#0a0a0a] border border-white/10 card-hover glow-hover group">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all group-hover:border-trust-500/60 group-hover:bg-trust-500/10" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);">
+                            <iconify-icon icon="lucide:phone" width="20" class="text-trust-400"></iconify-icon>
+                        </div>
+                        <div>
+                            <div class="text-[10px] tracking-wider uppercase text-neutral-600">Phone</div>
+                            <div class="text-sm font-medium">+255 66 498 8931</div>
+                        </div>
+                    </a>
+
+                    <!-- Social Links -->
+                    <div class="fade-up delay-400 flex items-center gap-3 pt-4">
+                        <a href="https://github.com/" target="_blank" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-trust-500/35 hover:bg-trust-500/10 transition-all">
+                            <iconify-icon icon="lucide:github" width="16" class="text-neutral-400"></iconify-icon>
+                        </a>
+                        <a href="https://linkedin.com/" target="_blank" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-trust-500/35 hover:bg-trust-500/10 transition-all">
+                            <iconify-icon icon="lucide:linkedin" width="16" class="text-neutral-400"></iconify-icon>
+                        </a>
+                        <a href="https://twitter.com/" target="_blank" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-trust-500/35 hover:bg-trust-500/10 transition-all">
+                            <iconify-icon icon="lucide:twitter" width="16" class="text-neutral-400"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="lg:col-span-3 fade-up delay-200">
+                    <form id="contactForm" class="p-6 md:p-8 rounded-2xl bg-[#0a0a0a] border border-white/10">
+                        <div class="grid sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="text-[10px] tracking-wider uppercase text-neutral-600 font-medium mb-2 block">Full Name *</label>
+                                <input type="text" id="nameInput" required placeholder="John Doe" class="w-full h-11 px-4 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-trust-500/50 transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-[10px] tracking-wider uppercase text-neutral-600 font-medium mb-2 block">Email Address *</label>
+                                <input type="email" id="emailInput" required placeholder="john@example.com" class="w-full h-11 px-4 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-trust-500/50 transition-colors">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="text-[10px] tracking-wider uppercase text-neutral-600 font-medium mb-2 block">Subject *</label>
+                            <input type="text" id="subjectInput" required placeholder="Project Inquiry" class="w-full h-11 px-4 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-trust-500/50 transition-colors">
+                        </div>
+                        <div class="mb-6">
+                            <label class="text-[10px] tracking-wider uppercase text-neutral-600 font-medium mb-2 block">Message *</label>
+                            <textarea id="messageInput" required rows="5" placeholder="Tell me about your project..." class="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-trust-500/50 transition-colors resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full h-12 rounded-xl bg-trust-500 text-black text-sm font-semibold tracking-tight flex items-center justify-center gap-2 hover:bg-trust-400 transition-all" style="box-shadow: 0 0 18px rgba(6,182,212,0.55);">
+                            <iconify-icon icon="lucide:send" width="15"></iconify-icon>
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="relative py-24 px-6 border-t border-white/5" style="z-index:1;">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="fade-up font-space font-bold text-3xl md:text-5xl leading-[1.05] tracking-tight text-gradient">
+                Ready to build something<br><span class="text-gradient-brand">amazing together?</span>
+            </h2>
+            <p class="fade-up delay-100 mt-4 text-lg font-light text-neutral-400 tracking-tight max-w-xl mx-auto">
+                I'm currently available for freelance projects and full-time opportunities. Let's turn your ideas into reality.
+            </p>
+            <div class="fade-up delay-200 flex flex-wrap items-center justify-center gap-4 mt-8">
+                <a href="https://wa.me/0697415257" target="_blank" class="h-12 px-8 rounded-full bg-trust-500 text-black text-sm font-semibold tracking-tight flex items-center gap-2 hover:bg-trust-400 transition-all" style="box-shadow: 0 0 18px rgba(6,182,212,0.55);">
+                    <iconify-icon icon="lucide:message-circle" width="15"></iconify-icon>
+                    Start on WhatsApp
+                </a>
+                <a href="mailto:mafurudaniel99@gmail.com" class="h-12 px-8 rounded-full bg-white text-black text-sm font-semibold tracking-tight flex items-center gap-2 hover:bg-neutral-200 transition-colors">
+                    <iconify-icon icon="lucide:mail" width="15"></iconify-icon>
+                    Send an Email
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative border-t border-white/5 py-12 px-6" style="z-index:1;">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-2.5">
+                    <div class="h-7 w-7 rounded-lg flex items-center justify-center logo-glow" style="background: linear-gradient(to top right, #06b6d4, #67e8f9); box-shadow: 0 0 18px rgba(6,182,212,0.55);">
+                        <span class="text-black font-space font-bold text-sm">DM</span>
+                    </div>
+                    <span class="font-space font-semibold text-sm tracking-tight">Daniel Mafuru</span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <a href="#about" class="text-xs text-neutral-500 hover:text-white transition-colors">About</a>
+                    <a href="#skills" class="text-xs text-neutral-500 hover:text-white transition-colors">Skills</a>
+                    <a href="#projects" class="text-xs text-neutral-500 hover:text-white transition-colors">Projects</a>
+                    <a href="#contact" class="text-xs text-neutral-500 hover:text-white transition-colors">Contact</a>
+                </div>
+                <div class="text-xs text-neutral-600">
+                    &copy; 2025 Daniel Mafuru. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <iconify-icon icon="lucide:check-circle" width="18" class="text-trust-400"></iconify-icon>
+        <span id="toastMessage" class="text-sm">Message sent successfully!</span>
+    </div>
+
+    <script>
+        // Digital Rain Canvas
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = ['⟟', 'Δ', '0', '1'];
+        const colWidth = 20;
+        let columns = Math.floor(canvas.width / colWidth);
+        let drops = Array(columns).fill(1);
+
+        window.addEventListener('resize', () => {
+            columns = Math.floor(canvas.width / colWidth);
+            drops = Array(columns).fill(1);
+        });
+
+        function drawRain() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#06b6d4';
+            ctx.font = '14px JetBrains Mono, monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(char, i * colWidth, drops[i] * colWidth);
+                if (drops[i] * colWidth > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawRain, 50);
+
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.style.opacity = '1';
+            mobileMenu.style.pointerEvents = 'auto';
+        });
+
+        function closeMenu() {
+            mobileMenu.style.opacity = '0';
+            mobileMenu.style.pointerEvents = 'none';
+        }
+
+        mobileMenuClose.addEventListener('click', closeMenu);
+        mobileLinks.forEach(link => link.addEventListener('click', closeMenu));
+
+        // Scroll Animations (Intersection Observer)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-up').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+
+        // Make hero animations play immediately
+        document.querySelectorAll('#hero .fade-up').forEach(el => {
+            el.style.animationPlayState = 'running';
+        });
+
+        // Skill Bar Animation
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bars = entry.target.querySelectorAll('.skill-bar');
+                    bars.forEach(bar => {
+                        const width = bar.style.width;
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, 200);
+                    });
+                    skillObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('#skills .rounded-2xl').forEach(card => {
+            skillObserver.observe(card);
+        });
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // Contact Form
+        const contactForm = document.getElementById('contactForm');
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('nameInput').value.trim();
+            const email = document.getElementById('emailInput').value.trim();
+            const subject = document.getElementById('subjectInput').value.trim();
+            const message = document.getElementById('messageInput').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                showToast('Please fill in all fields.');
+                return;
+            }
+
+            // Construct mailto link
+            const mailtoLink = `mailto:mafurudaniel99@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
+            window.location.href = mailtoLink;
+
+            showToast('Opening your email client...');
+            contactForm.reset();
+        });
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-white');
+                link.classList.add('text-neutral-400');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.remove('text-neutral-400');
+                    link.classList.add('text-white');
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.style.borderColor = 'rgba(255,255,255,0.15)';
+                nav.style.background = 'rgba(10,10,10,0.95)';
+            } else {
+                nav.style.borderColor = 'rgba(255,255,255,0.1)';
+                nav.style.background = 'rgba(10,10,10,0.8)';
+            }
+        });
+    </script>
+</body>
+</html>
